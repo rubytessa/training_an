@@ -1,0 +1,38 @@
+---
+title: "3.2 Literate Analysis with RMarkdown"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F)
+```
+
+```{r packages, echo = F}
+library(readr)
+```
+
+## Introduction 
+
+This is an *important* introduction to good practices in RMarkdown. 
+
+* read in the data
+
+
+```{r bg_chem}
+bg_chem <- read_csv("BGchem2008data.csv")
+
+```
+
+## Analysis
+
+```{r}
+mean_temp <- mean(bg_chem$CTD_Temperature)
+```
+
+The mean temperature was `r round(mean_temp, 2)`.
+
+* make a plot
+```{r}
+plot(bg_chem$CTD_Depth, bg_chem$CTD_Temperature)
+```
+
