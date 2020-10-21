@@ -11,4 +11,4 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Look at this site!
 
-[Data Tidying]data_cleaning.html
+[Data Tidying](data_cleaning.html)
