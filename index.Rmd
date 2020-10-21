@@ -12,3 +12,4 @@ knitr::opts_chunk$set(echo = TRUE)
 Look at this site!
 
 [Data Tidying](data-cleaning.html)
+[Cool Plots](data_vis.html) 
