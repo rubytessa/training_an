@@ -34,7 +34,7 @@ knb is an amazing data repository that is dedicated to keeping track of data. Th
 
 ```{r clean}
 
-catch_data <- catch_og %>% 
+catch_data <- catch_original %>% 
   select(-All, -notesRegCode) # includes Region, Year, Sp. of Salmon
 
 summary(catch_data)
