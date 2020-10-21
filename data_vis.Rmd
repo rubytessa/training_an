@@ -35,17 +35,54 @@ head(esc)
 Total annual escapement by species and region 
 ```{r analyze}
 
+# salmon sp
+salmon_sp <- c("Chinook", "Chum", "Coho", "Pink", "Sockeye")
+
 # annual 
 annual_esc <- esc %>% 
   separate(sampleDate, into = c("Year", "Month", "Day"), sep = "-") %>% 
   mutate(Year = as.numeric(Year)) %>% 
   group_by(Species, SASAP.Region, Year) %>% # remove the groups warning
-  summarise(escapement = sum(DailyCount))
-
-# salmon sp
-salmon_sp <- c("Chinook", "Chum", "Coho", "Chinook", "Pink")
-
-salmon_esc <- annual_esc %>% 
+  summarise(escapement = sum(DailyCount)) %>% 
   filter(Species %in% salmon_sp)
+```
+## Plotting 
+
+```{r plot}
+ggplot(annual_esc, mapping = aes(x = Species, y = escapement, fill = SASAP.Region)) +
+  geom_col() + 
+  theme_bw()
+
+my_theme <- theme_classic() + # themes are helpful, but built in themes will OVERRIDE any customization -- make sure to put first! 
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+
+kodiak_esc <- annual_esc %>% 
+  filter(SASAP.Region == "Kodiak") 
+
+ggplot(kodiak_esc, aes(x = Year, y = escapement, color = Species)) +
+  geom_line() + 
+  geom_point() +
+  scale_y_continuous(labels = comma) + # also percent, etc. for units 
+  labs(x = "Year", y = "Aunnual Escapement (total # of fish)", title = "Kodiak Salmon Escapement") +
+  my_theme
+```
+
+```{r}
+ggplot(annual_esc, aes(x = Year, y = escapement, color = Species)) + 
+    geom_line() +
+    geom_point() +
+    scale_y_continuous(labels = comma) +
+    facet_wrap(~SASAP.Region, scales = "free_y", ncol = 2) +
+    ylab("Escapement") +
+    my_theme
+```
+## Interactive Tables
+```{r}
+locations <- esc %>% 
+  distinct(Location, Latitude, Longitude) %>% 
+  drop_na()  # use sparingly 
+  
+
+datatable(locations)
 ```
 
