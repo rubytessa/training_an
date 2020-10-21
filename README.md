@@ -6,8 +6,9 @@ Training repository for Arctic Data Center training course.
 - Metadata
 - Fun 
 
-## Installation details
+## Organizational details
+Description of files in this repository
 
+- rmakrdown-intro: intro to markdown syntax 
+- data-cleaning: working with dplyr and tidyr to clean data
 
-- Step 1
-- Step 2

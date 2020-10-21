@@ -1,0 +1,81 @@
+---
+title: "Chapter 8 - Data Cleaning"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, message = F}
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+
+# Reading in Data
+```{r read}
+catch_original <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", method = "libcurl"),
+                  stringsAsFactors = FALSE)
+region_defs <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", method = "libcurl"),
+                        stringsAsFactors = FALSE) %>% 
+    select(code, mgmtArea)
+```
+## Benefits of read_csv: 
+
+- good for large csvs (progress bar),
+- auto-detecting column types, 
+- can read from urls!! avoid reformatting errors when opening from local software 
+
+knb is an amazing data repository that is dedicated to keeping track of data. This makes chance for future reproducibility much higher! One criticism: if it's a large datafile you're larging, you have to download multiple times. There is another package (pimms) that lets you load a file ONCE (grabs the first time, then uses local cached version). 
+
+
+# Cleaning data (with pipes!)
+
+```{r clean}
+
+catch_data <- catch_og %>% 
+  select(-All, -notesRegCode) # includes Region, Year, Sp. of Salmon
+
+summary(catch_data)
+
+catch_clean <- catch_data %>% # resolve human error typo 
+  mutate(Chinook = ifelse(Chinook == "I", 1, Chinook)) %>% 
+  mutate(Chinook = as.integer(Chinook))
+
+## another option while error checking
+i<- which(is.na(catch_clean$Chinook)) #NA value in Chinook column 
+catch_data[i,]
+
+catch_long <- catch_clean %>% 
+  pivot_longer(cols = -c(Region, Year), names_to = "species", values_to = "catch") %>% #tidy
+  rename(catch_thousands = catch) %>% # use rename to avoid errors w/col numbers!!
+  mutate(catch = catch_thousands * 1000) %>% 
+  select(-catch_thousands)
+
+head(catch_long)
+
+catch_wide <- catch_long %>% 
+  pivot_wider(names_from = species, values_from = catch)
+
+
+```
+## Analyzing data
+```{r analyze}
+mean_region <- catch_original %>%
+  select(-All, -notesRegCode) %>% 
+  mutate(Chinook = ifelse(Chinook == "I", 1, Chinook)) %>% 
+  mutate(Chinook = as.numeric(Chinook)) %>% 
+  pivot_longer(-c(Region, Year), names_to = "species", values_to = "catch") %>%
+  mutate(catch = catch*1000) %>% 
+  group_by(Region) %>% 
+  summarize(mean_catch = mean(catch)) %>% 
+  left_join(region_defs, by = c("Region" = "code")) %>% 
+  
+  # arrange
+  arrange(mean_catch)
+
+```
+
+
+
