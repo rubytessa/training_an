@@ -1,0 +1,72 @@
+---
+title: "functions_lesson"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(roxygen2)
+```
+
+# Example w/out using functions
+If you find yourself starting to copy & paste, you probably want to write a function! 
+```{r}
+airtemps <- c(212, 30.3, 78, 32)
+celsius1 <- (airtemps[1]-32)*5/9
+```
+
+# Create a function
+```{r}
+
+#' Converts Fahrenheit to Celsius 
+#' @param fahr Temperature data in degrees Fahrenheit to be converted
+#' @return temperature value in degrees Celsius
+#' @keywords conversion
+#' @export
+#' @examples
+#' fahr_to_celsius(32)
+#' fahr_to_celsius(c(32, 212, 72))
+
+fahr_to_celsius  <- function(fahr) {
+  celsius <- (fahr-32)*5/9
+  
+  return(celsius)
+}
+
+
+#' Converts Celsius to Fahrenheit 
+#' @param fahr Temperature data in degrees Fahrenheit to be converted
+#' @return temperature value in degrees Celsius
+#' @keywords conversion
+#' @export
+#' @examples
+#' celsius_to_fahr(0)
+#' celsius_to_fahr(c())
+
+celsius_to_fahr <- function(celsius) {
+  fahr <- celsius*9/5 + 32
+  
+  return(fahr)
+}
+```
+
+
+# Test our function
+```{r}
+
+celsius <- fahr_to_celsius(airtemps)
+celsius_2 <- mapply(fahr_to_celsius, airtemps)
+
+converted_temps <- airtemps %>% fahr_to_celsius() %>% 
+  celsius_to_fahr() 
+  
+all(airtemps == converted_temps)
+
+```
+
+
+# Document our function
+
