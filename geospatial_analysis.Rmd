@@ -1,0 +1,67 @@
+---
+title: "Geospatial Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+library(scales)
+library(ggmap)
+
+```
+
+
+# Get Data
+```{r}
+
+## Read in shapefile using sf 
+ak_regions <-  read_sf("shapefiles/ak_regions_simp.shp")
+
+## Viz
+plot(ak_regions)
+
+## Info
+class(ak_regions)
+head(ak_regions)
+
+
+```
+But notice that these plots are weird! The Aleutians wrap around so across the DateLine there put off to the right. These are plotted in WGS84 by default. 
+
+# Coordinate Reference Systems
+
+We will be using EPSG codes (handy, quick way to reference CRS's): 
+
+- 3338: Alaska Albers (good for Alaska)
+- 4326: WGS84 (handheld GPS units, lat long system)
+- 3857: Pseudo-Mercator (google maps, ArcGIS, ESRI, etc.)
+
+```{r}
+## Transform to better CRS
+
+# helpful to use the EPSG code in the variable name, particularly if you are working with multiple CRS's
+ak_regions_3338 <- ak_regions %>% 
+  st_transform(crs = 3338) # transform crs 
+
+## Check CRS
+st_crs(ak_regions_3338)
+
+## Viz 
+plot(ak_regions_3338)
+
+
+
+```
+
+
+
+
+
